@@ -1,0 +1,7 @@
+#!/bin/sh
+# svn_diff - use VIm to view CVS diff
+
+TMP=/tmp/.svn_diff.$$
+svn diff  $*  >$TMP
+[ -s "$TMP" ] && vi $TMP
+rm -f $TMP

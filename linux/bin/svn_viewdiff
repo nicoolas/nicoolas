@@ -1,0 +1,42 @@
+#!/bin/sh
+
+function usage ()
+{
+ echo "Usage  "
+ exit 1
+}
+
+TARGET=
+REP=
+SVN_ROOT_FAST="svn+ssh://svn.arkoon.dev/srv/svn/c/"
+SVN_ROOT_ADMIN="svn+ssh://svn.arkoon.dev/srv/svn/"
+SVN_ROOT=$SVN_ROOT_FAST
+
+while [ -n "$1" ]
+do
+  
+  case $1 in
+   -t) [ -z "$2" ] && usage
+       TARGET="$TARGET tags/$2" ; shift ;;
+   -b) [ -z "$2" ] && usage
+       TARGET="$TARGET branches/$2"; shift ;;
+   -m) [ -z "$2" ] && usage
+       REP=$2 ; shift ;;
+   -f) SVN_ROOT=$SVN_ROOT_FAST ;;
+   -a) SVN_ROOT=$SVN_ROOT_ADMIN ;;
+   *) usage
+  esac
+  shift
+done
+
+SVN_CMD="svn_diff "
+for b in $TARGET
+do
+ SVN_CMD="$SVN_CMD $SVN_ROOT/$REP/$b "
+done
+
+echo $SVN_CMD
+
+$SVN_CMD
+ 
+

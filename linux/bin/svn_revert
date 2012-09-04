@@ -1,0 +1,17 @@
+#!/bin/sh
+# svn_revert
+
+echo
+TMP=`mktemp`.tgz
+tar czf $TMP $* >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    echo
+	echo "-- -- -- -- -- -- -- -- -- -- -- --"
+    echo "Saving to-be-reverted files to $TMP:"
+	tar tzf $TMP | sed 's/^/- /'
+	echo "-- -- -- -- -- -- -- -- -- -- -- --"
+fi
+
+svn_action_ask.sh "Really REVERT the following file (yes / no / diff)?" "svn revert" $*
+

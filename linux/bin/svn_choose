@@ -1,0 +1,144 @@
+#!/bin/bash
+
+FILE_LIST_CI="./svn_choose.commit"
+FILE_LIST_REV="./svn_choose.revert"
+
+INIT_FILES="$*"
+function do_action() 
+{
+
+	for f in $1
+	do
+		echo "-  $f"
+	done
+	read r
+	[ "$r" == "yes" ] && return 0
+	return 1
+}
+
+function get_status()
+{
+	svn_status $* | grep -v '^A  +' | while read a b; do echo -n "$b "; done
+}
+function show_status()
+{
+	echo
+	echo "`basename $0`: status"
+	echo "-------------------------------------------"
+	svn_status $* | grep -v '^A  +'
+	echo "-------------------------------------------"
+	echo
+}
+
+function finalise()
+{
+
+	if [ -n "$COMMIT" ]
+	then 
+		echo
+		echo -n "$COMMIT" >$FILE_LIST_CI
+		echo "File list saved to $FILE_LIST_CI"
+		svn_ci $COMMIT
+	fi
+	
+	if [ -n "$REVERT" ]
+	then 
+		echo
+		echo -n "$REVERT" >$FILE_LIST_REV
+		echo "File list saved to $FILE_LIST_REV"
+		echo
+		svn_revert $REVERT
+	fi
+}
+
+if [ "$1" == "--resume" ]
+then
+	[ -e "$FILE_LIST_CI" ]  && COMMIT=$(cat $FILE_LIST_CI)
+	[ -e "$FILE_LIST_REV" ] && REVERT=$(cat $FILE_LIST_REV)
+	finalise
+	exit
+fi
+
+
+show_status $INIT_FILES
+
+FILES=`get_status $INIT_FILES`
+COMMIT=""
+REVERT=""
+ign=0
+for f in $FILES
+do
+	once_more="yes"
+	[ $ign -eq -1 ] && break
+	if [ $ign -gt 1 ]
+	then 
+		ign=$(echo $(($ign - 1)))
+		echo "FILE: $f (ignored)"
+		continue;
+	fi
+	while [ $once_more == "yes" ]
+	do
+		echo
+		echo "FILE: $f"
+		echo -n " => "
+		read r
+		case X"$r" in
+		Xc) # commit
+			COMMIT="$COMMIT $f"
+			once_more="no"
+			;;
+		Xr) # revert
+			REVERT="$REVERT $f"
+			once_more="no"
+			;;
+		Xd) # diff
+			svn_diff $f
+			once_more="yes"
+			;;
+		XD) # diff
+			svn_diff $INIT_FILES
+			once_more="yes"
+			;;
+		Xe) # edit
+			vi $f
+			once_more="yes"
+			;;
+		Xi) # ignore
+			once_more="no"
+			;;
+		Xs) # status
+			show_status $f
+			once_more="yes"
+			;;
+		XS) # status all (do not advertise)
+			show_status $INIT_FILES
+			once_more="yes"
+			;;
+		Xq) # quit
+			ign=-1
+			once_more="no"
+			;;
+		Xj[0-9]*)
+			ign=`echo $r | sed 's/^j//'`
+			echo "FILE: $f (ignored)"
+			once_more="no"
+			;;
+		*) # Help !
+			echo
+			echo "`basename $0`: Available commands: "
+			echo "Help   (h)"
+			echo "Diff   (d)"
+			echo "Edit   (e)"
+			echo "Ignore (i)"
+			echo "Commit (c)"
+			echo "Revert (r)"
+			echo "Quit   (q)"
+			echo
+			once_more="yes"
+			;;
+		esac
+	done
+done
+
+finalise
+

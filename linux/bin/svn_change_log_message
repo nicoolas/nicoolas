@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# svn propedit --revprop -r <rev> svn:log
+rev=$1
+shift
+[ -z "$rev" ] && { echo "come on baby light my fire"; exit 1; }
+
+
+svn propedit --revprop -r $rev svn:log $*
+

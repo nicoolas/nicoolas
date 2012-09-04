@@ -1,0 +1,17 @@
+#!/bin/sh
+
+default_limit=10
+
+while getopts sc:r:l: o
+do
+	case "$o" in
+	s) option=" $option --stop-on-copy " ;;
+	c) option=" $option -c $2 " ;;
+	r) option=" $option -r $2 " ;;
+	l) option=" $option --limit $2 " ;;
+   esac
+done
+shift $(($OPTIND-1))
+
+svn log $option $* | less
+

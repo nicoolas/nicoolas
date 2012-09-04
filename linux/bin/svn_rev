@@ -1,0 +1,68 @@
+#!/bin/sh
+
+function usage()
+{
+	echo "usage: `basename $0` [options]"
+	echo "       -a print all"
+	echo "       -b print revision from which branch was created"
+	echo "       -l print last modification revision "
+	echo "       -up update each repositery "
+	exit 0;
+}
+
+for o in $*
+do
+  case $o in
+  -a) do_branch_creation="yes"
+	  do_last_modif="yes"
+	  ;;
+  -b) do_branch_creation="yes";;
+  -l) do_last_modif="yes";;
+  -up) do_update="yes";;
+  -h) usage;;
+  *) echo "unknown option $o"; exit 1
+  esac
+done
+
+L=
+P=
+L[0]=" ."                P[0]="fast360"
+L[1]=" ./akserver "      P[1]="akserver"
+L[2]=" ./arkoon-kernel " P[2]="arkoon-kernel"
+L[3]=" ./build "         P[3]="build"
+L[4]=" ./arkoon-libs "   P[4]="arkoon-libs"
+L[5]=" ./softs "         P[5]="softs"
+L[6]=" ./softs/linux "   P[6]="softs/linux"
+L[7]=" ./arkoon-apps "   P[7]="arkoon-apps"
+L[8]=" ./6wind/XMS "     P[8]="6wind"
+
+NUM_VAR=8
+
+
+printf "%-15s %-10s"  "module" "Rev. nb."
+[ -n "$do_last_modif" ] && printf "%-10s" "last mod."
+[ -n "$do_branch_creation" ] && printf "%-10s" "from branch"
+echo 
+
+for i in `seq 0  $NUM_VAR`
+do
+#update, but not '.' dir !
+[ -n "$do_update" -a $i -gt 0 ] && svn update ${L[$i]} 2>&1 >/dev/null
+R=`svn info ${L[$i]} 2>&1 | grep "Révision :"  | sed 's/^[^0-9]*\([0-9]*\)$/\1/'`
+[ -n "$do_last_modif" ] && D=`svn info ${L[$i]} 2>&1 | grep "Révision de la dernière modification :"  | sed 's/^[^0-9]*\([0-9]*\)$/\1/'`
+[ -n "$do_branch_creation" ] && B=`svn log --stop-on-copy ${L[$i]} | grep '^r[0-9]*' | tail -1 | sed 's/^r\([0-9]*\).*$/\1/'`
+[ -n "$R" ] && printf "%-15s %-10s" ${P[$i]} "$R"
+[ -n "$D" ] && printf "%-10s" "$D"
+[ -n "$B" ] && printf "%-10s" "$B"
+[ -n "$B" -a -n "$D" ] && [ 0$D -gt 0$B ] && printf "modified"
+echo
+
+done
+
+exit 
+
+
+
+
+
+
