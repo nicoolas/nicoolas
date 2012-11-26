@@ -1,3 +1,6 @@
+## [ -n "$bashrc_aliases_sourced" ] && return
+## export bashrc_aliases_sourced=yes
+
 alias init_profile=". ${HOME}/.bashrc"
 alias edit_profile="vi ${HOME}/.bashrc"
 alias apt='sudo aptitude '

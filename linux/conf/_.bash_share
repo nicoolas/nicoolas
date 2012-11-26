@@ -1,4 +1,5 @@
-#/bin/bash
+## [ -n "$bashrc_share_sourced" ] && return
+## export bashrc_share_sourced=yes
 
 #
 # source ~/.bash_aliases
