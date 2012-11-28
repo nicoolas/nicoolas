@@ -1,0 +1,16 @@
+#!/bin/sh
+
+M1="Yelling"
+M2="done done done"
+
+if [ -n "$2" ] 
+then
+	M1=$1
+	M2=$2
+elif [ -n "$1" ]
+then
+	M2=$1
+fi
+
+notify-send -t 0 "$M1" "$M2"
+

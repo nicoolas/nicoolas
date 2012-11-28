@@ -1,0 +1,12 @@
+#!/bin/sh
+
+file=/tmp/shout
+message="$*"
+[ -z "$message" ] && message="'Climb in the back with your head in the clouds and you're gone.'"
+if [ -r /is_chroot ]
+then
+	echo "$message" >$file
+else
+	kdialog --msgbox "$message"
+fi
+
