@@ -1,0 +1,33 @@
+#!/bin/sh
+MACH=$1
+FILE=$2
+LOCFILE=$3
+
+shift
+shift
+[ -n "$LOCFILE" ] && shift
+
+if [ -z "$FILE" -o -z "$MACH" ]
+then
+ echo "usage `basename $0` machine_name remote_cap_file local_file"
+ exit 1
+fi
+
+[ -z "$LOCFILE" ] && LOCFILE=`basename $FILE`
+
+echo "CAPTURE: $FILE ON $MACH"
+
+[ -s $LOCFILE ] && mv $LOCFILE $LOCFILE.old
+
+# getfile /tmp/$FILE
+nkscp $MACH $FILE $LOCFILE
+ 
+[ $? -ne 0 ] && exit 1
+[ ! -r $LOCFILE ] && exit 1
+
+cmd="wireshark -r $LOCFILE $*"
+echo "Executing: $cmd"
+exec $cmd >/dev/null 2>&1
+
+
+

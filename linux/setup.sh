@@ -19,8 +19,8 @@ done
 
 _log "Appending sources to bashrc file"
 cat >> $HOME/.bashrc << EOS 
-. ~/.bash_aliases
-. ~/.bash_share
+[ -f ~/.bash_share ] && source ~/.bash_share
+[ -f ~/.bash_aliases ] && source ~/.bash_aliases
 EOS
 
 
