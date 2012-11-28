@@ -1,2 +1,4 @@
 #!/bin/sh
 svn status $* | grep -v '^[I?]'
+
+# I am a GIT test
