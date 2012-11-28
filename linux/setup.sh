@@ -9,7 +9,7 @@ _log() {
 
 _log "Setting up configuration files"
 cur_dir=$(pwd)
-for file in conf/_.*
+for file in conf/_.* bin
 do
 	link_file="$HOME/$(basename $file | sed s/^_//)"
 	echo " - $(basename $link_file)"
@@ -19,8 +19,8 @@ done
 
 _log "Appending sources to bashrc file"
 cat >> $HOME/.bashrc << EOS 
-source ~/.bash_aliases
-source ~/.bash_share
+. ~/.bash_aliases
+. ~/.bash_share
 EOS
 
 
