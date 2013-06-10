@@ -40,6 +40,17 @@ determine_notify_tool()
 }
 
 
+_error()
+{
+cat <<EOS
+
+*****************************************************************
+*** Error: $*
+*****************************************************************
+
+EOS
+}
+
 _usage()
 {
 cat <<EOF
@@ -204,10 +215,14 @@ if [ "$alive_mode" = "yes" ]; then
 	mode="track_up"
 	once="yes"
 	[ $SLEEP -gt 2 ] && SLEEP=2
+else
+	if [ "$mode" = "down" ] ; then mode=track_down
+	elif [ "$mode" = "up" ] ; then mode=track_up
+	else 
+		_error "Bad mode: [$mode]."
+		_usage 1
+	fi
 fi
-[ "$mode" != "down" ]  && mode=track_down
-[ "$mode" != "up" ]  && mode=track_up
-[ "$mode" != "track_down" -a "$mode" != "track_up" ]  && _usage 1
 [ "$method" != "ping" -a "$method" != "arping" ]  && _usage 1
 
 cat <<EOF
