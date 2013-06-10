@@ -1,1 +1,1 @@
-monitor_host_v1.sh
+./monitor_host_v2.sh
