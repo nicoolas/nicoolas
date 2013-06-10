@@ -29,4 +29,5 @@ default)
 	;;
 esac
 
-tmux-go $tmux_force
+[ -r  ~/.bash_local ] && source ~/.bash_local
+#tmux-go $tmux_force
