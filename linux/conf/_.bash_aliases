@@ -4,7 +4,6 @@
 alias init_profile=". ${HOME}/.bashrc"
 alias edit_profile="vi ${HOME}/.bashrc"
 alias apt='sudo aptitude '
-alias browse='echo nautilus `pwd`; nautilus `pwd` & '
 alias slogs='sudo tail -n 40 -f /var/log/syslog'
 alias logs='sudo tail -n 40 -f /var/log/messages'
 alias shout='notify-send "Youpi."'
@@ -24,6 +23,21 @@ alias tmux-ls='tmux list-sessions'
 alias tmux-ns='tmux new-session -s '
 alias tmux-copy=" tr '\012' ' ' | tee /tmp/screen-exchange"
 alias tmux-pwd=" pwd | tmux-copy"
+
+function browse()
+{
+	local _dir="$1"
+	local _browser="nautilus"
+	[ -z "$_dir" ] && _dir="$(pwd)"
+	echo $_browser "$_dir" 
+	if which $_browser &>/dev/null
+	then
+		$_browser "$_dir"  &
+	else
+		echo "Browser '$_browser' not found"
+		return 1
+	fi
+}
 
 function tmux-go()
 {
