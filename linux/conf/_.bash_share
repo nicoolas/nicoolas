@@ -15,6 +15,9 @@ if [ $(whoami) = root ]; then
 else
 	export PS1=''
 fi
+if [ -e /.is_chroot ]; then
+	export PS1='\[\033[1;34m\](chroot)\[\033[0m\] '
+fi
 export PS1=$PS1'\[\033[1;31m\]$\[\033[0m\] '
 export PS1=$PS1'${PWD}\[\033[1;31m\]:\[\033[0m\] '
 
@@ -30,4 +33,4 @@ default)
 esac
 
 [ -r  ~/.bash_local ] && source ~/.bash_local
-#tmux-go $tmux_force
+tmux-go $tmux_force
