@@ -65,4 +65,26 @@ alias l='ls -hCF'
 #alias kgb='setxkbmap gb; xmodmap ~/.xmodmaprc'
 #alias kus='setxkbmap us; xmodmap ~/.xmodmaprc'
 
+function base() {
+	while read in
+	do
+		in_upper=${in^^}
+		for base in " 2" 10 16
+			do
+			echo -en "base $base: "
+			echo "obase=$base; ibase=16; $in_upper" | bc
+		done
+	done
+}
 
+function base_bin() {
+	echo  "obase=16; ibase=2; $1" | bc  | base
+}
+
+function base_dec() {
+	echo  "obase=16; ibase=10; $1" | bc  | base
+}
+
+function base_hex() {
+	echo  $1 | base
+}
