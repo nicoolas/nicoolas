@@ -1,0 +1,26 @@
+#!/bin/sh
+
+_get_tc_dir() {
+	truecrypt -t --list $main_tc_file | cut -d ' ' -f4
+}
+
+[ -r ~/.bash_local ] && . ~/.bash_local
+echo $main_tc_file
+
+if [ -z "$main_tc_file" ]
+then
+	kdialog --error "Export variable 'main_tc_file' first"
+	exit 1
+fi
+
+case $(basename $0) in
+	*.mount)
+		truecrypt --keyfiles="" --protect-hidden=no $main_tc_file
+		dolphin $(_get_tc_dir) >/dev/null 2>&1 &
+		;;
+	*.umount)
+		truecrypt --dismount $main_tc_file
+		;;
+esac
+		
+	
