@@ -27,16 +27,19 @@ alias tmux-pwd=" pwd | tmux-copy"
 function browse()
 {
 	local _dir="$1"
-	local _browser="nautilus"
-	[ -z "$_dir" ] && _dir="$(pwd)"
-	echo $_browser "$_dir" 
-	if which $_browser &>/dev/null
-	then
-		$_browser "$_dir"  &
-	else
-		echo "Browser '$_browser' not found"
+	local _browser=""
+	for _b in "nautilus" "dolphin" 
+	do
+		which $_b &> /dev/null && _browser=$_b
+		[ -n "$_browser" ] && break
+	done
+	if [ -z "$_browser" ]; then
+		echo "No browser found"
 		return 1
 	fi
+	[ -z "$_dir" ] && _dir="$(pwd)"
+	echo $_browser "$_dir" 
+	$_browser "$_dir"  &>/dev/null & 
 }
 
 function tmux-go()
