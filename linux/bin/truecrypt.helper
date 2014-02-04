@@ -1,25 +1,32 @@
-#!/bin/sh
+#!/bin/bash
 
 _get_tc_dir() {
-	truecrypt -t --list $main_tc_file | cut -d ' ' -f4
+	truecrypt -t --list "$1" | cut -d ' ' -f4
+}
+_k_error() {
+	kdialog --error "$1"
+	exit 1
 }
 
-[ -r ~/.bash_local ] && . ~/.bash_local
+[ -r ~/.bash_local ] && . ~/.bash_local
 echo $main_tc_file
+echo $large_tc_file
 
-if [ -z "$main_tc_file" ]
-then
-	kdialog --error "Export variable 'main_tc_file' first"
-	exit 1
-fi
+[ -z "$main_tc_file" ] && _k_error "Export variable 'main_tc_file' first"
 
 case $(basename $0) in
 	*.mount)
 		truecrypt --keyfiles="" --protect-hidden=no $main_tc_file
-		dolphin $(_get_tc_dir) >/dev/null 2>&1 &
+		[ $? -eq 0 ] && dolphin $(_get_tc_dir $main_tc_file) >/dev/null 2>&1 &
 		;;
-	*.umount)
-		truecrypt --dismount $main_tc_file
+	*.mount-large)
+		truecrypt -t --list "$main_tc_file" || _k_error "Mount main TC volume first" 
+		truecrypt --keyfiles="$(_get_tc_dir $main_tc_file)/large_tc.key_" --protect-hidden=no $large_tc_file
+		[ $? -eq 0 ] && dolphin $(_get_tc_dir $large_tc_file) >/dev/null 2>&1 &
+		;;
+	*.umount-all)
+		truecrypt -t --list "$main_tc_file" && truecrypt --dismount $main_tc_file
+		truecrypt -t --list "$large_tc_file" && truecrypt --dismount $large_tc_file
 		;;
 esac
 		
