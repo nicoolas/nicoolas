@@ -91,3 +91,14 @@ function base_dec() {
 function base_hex() {
 	echo  $1 | base
 }
+
+# -- GIT aliases
+
+alias git_merge_remove="git status --porcelain | sed -n '/^ D/s/^ D //p' | while read f ; do git rm $f; done"
+
+# GIT: get the diff of one commit
+# git diff COMMIT^!
+# or 
+# git diff-tree -p COMMIT
+alias git_diff_one="git show --color --pretty=format:%b "
+
