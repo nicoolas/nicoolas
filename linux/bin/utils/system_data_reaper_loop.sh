@@ -8,6 +8,23 @@ OUTPUT_BASE_FOLDER=/tmp/SDR/out
 
 SCRIPT_OPTIONS="-d"
 
+_usage()
+{
+cat <<EOF
+
+Usage: `basename $0` <option> 
+
+          -h : this help.
+		  -d : daemonise loop script
+		  -w : watch data output by daemonised loop script
+		  -k : kill previouslt daemonised script
+		  -p : pack log files in output foldert add 
+
+
+EOF
+    exit $1
+}
+
 INTERVAL=20
 
 while getopts dwkp o
@@ -17,6 +34,7 @@ do
     w) watch=yes ;;
     k) do_kill=yes ;;
     p) do_pack=yes ;;
+    h) _usage 0;;
     *) _usage 1;;
     esac
 done
