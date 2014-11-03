@@ -14,12 +14,11 @@ cat <<EOF
 
 Usage: `basename $0` <option> 
 
-          -h : this help.
-		  -d : daemonise loop script
-		  -w : watch data output by daemonised loop script
-		  -k : kill previouslt daemonised script
-		  -p : pack log files in output foldert add 
-
+  -h : this help.
+  -d : daemonise loop script
+  -w : watch data output by previously daemonised loop script
+  -k : kill previously daemonised script
+  -p : pack log files in output folder
 
 EOF
     exit $1

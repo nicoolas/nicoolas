@@ -13,7 +13,7 @@ Usage: `basename $0` <option> [files]
           -e : Extra info - such as detailed CPU usage.
           -f : output dumped data (-d option) to the given filename,
                to which is appended a 'date + time' tag.
-	  analyze options:
+      analyze options:
           -b <directory> :
             compare the oldest and most recent files found in the directory
           -c <file1> <file2> :
@@ -102,7 +102,7 @@ BEGIN {
 	printf "\n%-32s: % 20s / % 20s   => % 20s\n\n", "Counter", "Start", "End", "Derive";
 }
 {
-if ($1 != "date" && $1 != "cluster_virt_ifce" ) {
+if ($1 != "date") {
 	if ($1 in array) {
 		if (array[$1] == 0) ratio=0
 		else {
