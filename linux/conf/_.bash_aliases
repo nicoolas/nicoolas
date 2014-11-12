@@ -21,8 +21,9 @@ alias sfind='find  -path *.svn -prune -o -print '
 alias tmux-as='tmux attach-session -t '
 alias tmux-ls='tmux list-sessions'
 alias tmux-ns='tmux new-session -s '
-alias tmux-copy=" tr '\012' ' ' | tee /tmp/screen-exchange"
-alias tmux-pwd=" pwd | tmux-copy"
+alias tmux-copy=" tee /tmp/screen-exchange"
+alias tmux-copy-n=' awk "//{printf \$1 }" | tee /tmp/screen-exchange'
+alias tmux-copy-pwd=" pwd | tmux-copy-n"
 
 function browse()
 {
@@ -55,6 +56,21 @@ function tmux-go()
         else tmux-ns $DEFAULT_TMUX_SESSION_NAME
         fi
     fi
+}
+
+function tmux-buffers()
+{
+	local buf=""
+	for i in $(seq 0  9)
+	do 
+		buf=/opt/screen/scbuf.$i
+		if [ -r $buf ]
+		then
+			echo "\033[1;31m=== Buffer #$i ===\033[0m"
+			cat $buf
+			echo
+		fi
+	done | less -R
 }
 
 # some more ls aliases
@@ -101,4 +117,6 @@ alias git_merge_remove="git status --porcelain | sed -n '/^ D/s/^ D //p' | while
 # or 
 # git diff-tree -p COMMIT
 alias git_diff_one="git show --color --pretty=format:%b "
+alias git_status="git status --porcelain | grep -v '^??'"
+alias git_status_all="git status --porcelain"
 
