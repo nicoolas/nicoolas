@@ -7,26 +7,54 @@ _k_error() {
 	kdialog --error "$1"
 	exit 1
 }
+_exec_hook()
+{
+	if [ -n "$1" ]; then
+		if [ -x "$1" ]; then
+			$1 "$2"
+		else
+			_k_error "Failed to execute hook file '$1'"
+		fi
+	fi
+}
 
 [ -r ~/.bash_local ] && . ~/.bash_local
 echo $main_tc_file
 echo $large_tc_file
 
-[ -z "$main_tc_file" ] && _k_error "Export variable 'main_tc_file' first"
+if [ -n "$1" ]
+then
+	tc_file="$1"
+	echo "Selecting specific file: '$tc_file'"
+else
+	[ -z "$main_tc_file" ] && _k_error "Export variable 'main_tc_file' first"
+	tc_file="$main_tc_file"
+fi
+
 
 case $(basename $0) in
 	*.mount)
-		truecrypt --keyfiles="" --protect-hidden=no $main_tc_file
-		[ $? -eq 0 ] && dolphin $(_get_tc_dir $main_tc_file) >/dev/null 2>&1 &
+		[ -r "$tc_file" ] || _k_error "Cannot find file '$tc_file'"
+		truecrypt --keyfiles="" --protect-hidden=no "$tc_file"
+		[ $? -eq 0 ] && dolphin $(_get_tc_dir "$tc_file") >/dev/null 2>&1 &
 		;;
 	*.mount-large)
-		truecrypt -t --list "$main_tc_file" || _k_error "Mount main TC volume first" 
-		truecrypt --keyfiles="$(_get_tc_dir $main_tc_file)/large_tc.key_" --protect-hidden=no $large_tc_file
-		[ $? -eq 0 ] && dolphin $(_get_tc_dir $large_tc_file) >/dev/null 2>&1 &
+		truecrypt -t --list "$main_tc_file" || _k_error "Mount main TC volume first"
+		truecrypt --keyfiles="$(_get_tc_dir "$main_tc_file")/large_tc.key" --protect-hidden=no "$large_tc_file"
+		[ $? -eq 0 ] && dolphin $(_get_tc_dir "$large_tc_file") >/dev/null 2>&1 &
+		;;
+	*.umount-one)
+		[ -r "$tc_file" ] || _k_error "Cannot find file '$tc_file'"
+		truecrypt -t --list "$tc_file" && truecrypt --dismount "$tc_file"
 		;;
 	*.umount-all)
-		truecrypt -t --list "$main_tc_file" && truecrypt --dismount $main_tc_file
-		truecrypt -t --list "$large_tc_file" && truecrypt --dismount $large_tc_file
+		if truecrypt -t --list "$main_tc_file"
+		then
+			if truecrypt --dismount "$main_tc_file"; then
+				_exec_hook "$main_tc_file_umount_hook"  "$main_tc_file"
+			fi
+		fi
+		truecrypt -t --list "$large_tc_file" && truecrypt --dismount "$large_tc_file"
 		;;
 esac
 		
