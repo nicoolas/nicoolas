@@ -45,17 +45,15 @@ function browse()
 
 function tmux-go()
 {
-    DEFAULT_TMUX_SESSION_NAME=.
-    if [ "$TERM" = "xterm" -o "$1" = "force" ] ; then
-        if [ "$TERM" != "xterm" ] ; then
-            echo "Forcing embedded tmux sessions (TERM=$TERM)"
-            #unset TMUX
-        fi
-        if  tmux has-session -t $DEFAULT_TMUX_SESSION_NAME
-        then tmux-as $DEFAULT_TMUX_SESSION_NAME
-        else tmux-ns $DEFAULT_TMUX_SESSION_NAME
-        fi
-    fi
+	DEFAULT_TMUX_SESSION_NAME=.
+	if [ -z "$TMUX" ]; then
+		if  tmux has-session -t $DEFAULT_TMUX_SESSION_NAME
+		then tmux attach-session -t $DEFAULT_TMUX_SESSION_NAME
+		else tmux new-session -s $DEFAULT_TMUX_SESSION_NAME
+	    fi
+	else
+		echo "Already within a Tmux session ($TMUX)"
+	fi
 }
 
 function tmux-buffers()
