@@ -65,7 +65,9 @@ then
     echo "Directory [$local_mount_point] already mounted:"
 else
     echo "Mounting [$remote_mount_point] on [$local_mount_point]"
+	set -x
     sudo mount -t cifs -o $mount_options $remote_mount_point $local_mount_point
+	set +x
 fi
 
 echo
