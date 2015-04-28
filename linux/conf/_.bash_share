@@ -26,4 +26,7 @@ export PS1=$PS1'${PWD}\[\033[1;31m\]:\[\033[0m\] '
 PS2='>> '
 
 [ -r  ~/.bash_local ] && source ~/.bash_local
-tmux-go
+if [ -n "$tgo_auto" ]
+then
+	tgo
+fi

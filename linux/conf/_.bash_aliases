@@ -39,7 +39,7 @@ function browse()
     return 1
 }
 
-function tmux-go()
+function tgo()
 {
 	if [ -z "$TMUX" ]; then
 		tmux new-session -A -s 0
