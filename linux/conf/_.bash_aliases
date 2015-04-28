@@ -43,6 +43,14 @@ function tgo()
 {
 	if [ -z "$TMUX" ]; then
 		tmux new-session -A -s 0
+		if [ $? -ne 0 ] # new-session -A not supported on tmux versions < 1.9
+		then
+			DEFAULT_TMUX_SESSION_NAME=0
+			if  tmux has-session -t $DEFAULT_TMUX_SESSION_NAME
+			then tmux attach-session -t $DEFAULT_TMUX_SESSION_NAME
+			else tmux new-session -s $DEFAULT_TMUX_SESSION_NAME
+			fi
+		fi
 	else
 		echo "Running in a Tmux session ($TMUX)"
 	fi
