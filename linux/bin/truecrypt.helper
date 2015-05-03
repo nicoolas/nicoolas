@@ -70,7 +70,7 @@ case $(basename $0) in
 		;;
 	*.mount-large)
 		truecrypt -t --list "$main_tc_file" || _k_error "Mount main TC volume first"
-		truecrypt --keyfiles="$(_get_tc_dir "$main_tc_file")/large_tc.key" --protect-hidden=no "$large_tc_file"
+		truecrypt --keyfiles="$(_get_tc_dir "$main_tc_file")/keys/tc_large.key" --protect-hidden=no "$large_tc_file"
 		[ $? -eq 0 ] && dolphin $(_get_tc_dir "$large_tc_file") >/dev/null 2>&1 &
 		;;
 	*.umount-one)
