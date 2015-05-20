@@ -25,7 +25,7 @@ alias tmux-copy-pwd=" pwd | tmux-copy-n"
 function browse()
 {
     local _dir="$1"
-    for _b in "nautilus" "dolphin"
+    for _b in "nautilus" "dolphin" "nemo"
     do
         if which $_b &> /dev/null
         then
