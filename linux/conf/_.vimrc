@@ -175,3 +175,5 @@ map <leader>nu :set nu! <CR>
 map <leader>sd :%s/\s\+$//ge<CR>
 map <leader>st :%s/^\([\t]*\)    /\1\t/ge<CR>
 
+" Markdown Options
+let g:vim_markdown_folding_disabled=1
