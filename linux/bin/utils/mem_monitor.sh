@@ -40,9 +40,13 @@ _gottrap() {
 
 trap _gottrap SIGINT SIGTRAP SIGTERM SIGKILL
 
-echo "Start of script..."
-
 rm -f $LOGFILE $MEMINFO_FILE
+
+cat <<EOS
+Start of script:
+ LOGFILE: $LOGFILE
+ MEMINFO_FILE: $MEMINFO_FILE
+EOS
 
 time1=`_datesec`
 echo "process monitored : $PROCESS_TO_MONITOR" >> $LOGFILE
