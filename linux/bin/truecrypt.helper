@@ -4,7 +4,10 @@ _get_tc_dir() {
 	truecrypt -t --list "$1" | cut -d ' ' -f4
 }
 _k_error() {
-	kdialog --error "$1"
+    if ! kdialog --error "$1" 2>/dev/null
+    then
+        echo "$1"
+    fi
 	exit 1
 }
 _exec_hook()
@@ -59,3 +62,5 @@ case $(basename $0) in
 esac
 		
 	
+echo "Current truecrypt mounts:"
+truecrypt -t --list
