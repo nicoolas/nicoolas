@@ -1,3 +1,5 @@
+#!/bin/bash -x
+
 ## [ -n "$bashrc_share_sourced" ] && return
 ## export bashrc_share_sourced=yes
 
@@ -10,27 +12,25 @@ export EDITOR=vim
 
 # Prompt setup
 # user
+
+no_color="\[\033[0m\]"
+
 if [ $(whoami) = root ]; then
-	export PS1='\[\033[1;31m\][\[\033[0m\]\u\[\033[1;31m\]]\[\033[0m\] '
+	ps1_color="\[\033[1;31m\]"
 else
-	export PS1=''
+	ps1_color="\[\033[1;34m\]"
 fi
+export PS1="$ps1_color[$no_color\u$ps1_color]$no_color "
+
 if [ -e /.is_chroot ]; then
-	export PS1='\[\033[1;34m\](chroot)\[\033[0m\] '
+	export PS1="$ps1_color(chroot)$no_color "
 fi
-export PS1=$PS1'\[\033[1;31m\]$\[\033[0m\] '
-export PS1=$PS1'${PWD}\[\033[1;31m\]:\[\033[0m\] '
+export PS1=$PS1"\${PWD}$ps1_color :$no_color "
 
 PS2='>> '
 
-case $(hostname) in
-Marisol)
-	tmux_force="force"
-	;;
-default)
-	tmux_force=""
-	;;
-esac
-
 [ -r  ~/.bash_local ] && source ~/.bash_local
-tmux-go $tmux_force
+if [ -n "$tgo_auto" ]
+then
+	tgo
+fi

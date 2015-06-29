@@ -10,15 +10,45 @@ _k_error() {
     fi
 	exit 1
 }
-_exec_hook()
+_exec_hooks()
 {
-	if [ -n "$1" ]; then
-		if [ -x "$1" ]; then
-			$1 "$2"
+	local file="$1"
+	shift
+	echo "Exec Hooks"
+	for s in "$@"
+	do
+		if [ -x "$s" ]; then
+			echo "Exec Hook: '$s'"
+			$s "$file" &
+			echo "Exec Hook: pid: $!"
 		else
-			_k_error "Failed to execute hook file '$1'"
+			_k_error "Failed to execute hook file '$s'"
 		fi
+	done
+}
+
+_check_checksum()
+{
+	local ret_code=0
+	# File not not exist, return 2
+	[ -z "$main_tc_file_chksum" ] && return 2
+	if [ -r "$main_tc_file_chksum" ]
+	then
+		pushd $(dirname "$main_tc_file")
+		sha1sum --check "$main_tc_file_chksum"
+		ret_code=$?
+		popd
 	fi
+
+	# File not modified, return 1
+	[ $ret_code -eq 0 ] && return 1
+
+	echo "prev_csum [$prev_csum]"
+	echo "Previous: $(cat $main_tc_file_chksum)"
+	sha1sum $main_tc_file > $main_tc_file_chksum
+	echo "Current: $(cat $main_tc_file_chksum)"
+	# File has changed, return 0
+	return 0
 }
 
 [ -r ~/.bash_local ] && . ~/.bash_local
@@ -43,7 +73,7 @@ case $(basename $0) in
 		;;
 	*.mount-large)
 		truecrypt -t --list "$main_tc_file" || _k_error "Mount main TC volume first"
-		truecrypt --keyfiles="$(_get_tc_dir "$main_tc_file")/large_tc.key" --protect-hidden=no "$large_tc_file"
+		truecrypt --keyfiles="$(_get_tc_dir "$main_tc_file")/keys/tc_large.key" --protect-hidden=no "$large_tc_file"
 		[ $? -eq 0 ] && dolphin $(_get_tc_dir "$large_tc_file") >/dev/null 2>&1 &
 		;;
 	*.umount-one)
@@ -54,7 +84,14 @@ case $(basename $0) in
 		if truecrypt -t --list "$main_tc_file"
 		then
 			if truecrypt --dismount "$main_tc_file"; then
-				_exec_hook "$main_tc_file_umount_hook"  "$main_tc_file"
+				if _check_checksum
+				then
+					touch "$main_tc_file" # Refresh file -> force bt-sync action
+					_exec_hooks "$main_tc_file" $main_tc_file_umount_hooks
+				else
+					echo "Do not call Hook files, Checksums identical"
+					cat "$main_tc_file_chksum"
+				fi
 			fi
 		fi
 		truecrypt -t --list "$large_tc_file" && truecrypt --dismount "$large_tc_file"

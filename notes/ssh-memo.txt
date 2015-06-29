@@ -1,0 +1,80 @@
+TODO: Adding or Removing Tunnels within an Established Connection
+http://en.wikibooks.org/wiki/OpenSSH/Cookbook/Tunnels#Adding_or_Removing_Tunnels_within_an_Established_Connection
+
+=====================================================================
+=== Forward trafic 1:
+
+        HostA                                HostB                                HostC
+SSH           |--/FW/--------((*))---------> SSH-PortB
+TUNNEL  PortA == == == == == == == == == ==> PortB == == == == == == == == == ==> PortC
+
+Tunnel: from HostA --> HostC
+Run from: HostA
+
+ssh [-N] [-p SSH-PortB]
+    UserB@HostB 
+    -L PortA:HostC:PortC
+
+Example: From A.com, to C.com, via B.com
+On A.com: ssh -N UserB@B.com -L 11111:C.com:22222
+Test:
+On C.com: netcat -l -p 22222
+On A.com: netcat 127.0.0.1 11111
+
+=====================================================================
+=== Forward trafic 2:
+
+        HostA                                HostB
+SSH           |--/FW/--------((*))---------> SSH-PortB
+TUNNEL  PortA == == == == == == == == == ==> PortB
+
+Tunnel: from HostA --> HostB
+Run from: HostA
+
+ssh [-N] [-p SSH-PortB]
+    UserB@HostB
+    -L PortA:HostB:PortB
+
+Example: From A.com, to B.com
+On A.com: ssh -N Buser@B.com -L 11111:B.com:22222
+Test:
+On B.com: netcat -l -p 22222
+On A.com: netcat 127.0.0.1 11111
+
+=====================================================================
+=== Reverse forward traffic 1:
+
+        HostA                                HostB                                HostC
+SSH     SSH-PortA  <--------((*))-----/FW/--|
+TUNNEL  PortA  == == == == == == == == == == == == == == == == == == == == == ==> PortC
+
+Tunnel: from HostA --> HostC
+Run from: HostB
+
+ssh [-N] [-p SSH-PortA]
+    UserA@HostA
+    -R PortA:HostC:PortC
+
+Example: Tunnel traffic from A.com:10022 ==> C.com:22
+On B.com: ssh -N UserA@A.com -R 10022:C.com:22
+
+=====================================================================
+=== Reverse forward traffic 2:
+
+        HostA                                HostB
+SSH           |--/FW/--------((*))---------> SSH-PortB
+TUNNEL  PortA <== == == == == == == == == == PortB
+
+Tunnel: from HostB ==> HostA
+Run from: HostA
+
+ssh [-N] [-p ssh-port-B]
+    UserB@HostB
+    -R PortB:localhost:PortA
+=> HostA:PortA (here localhost:PortA) to be interpreted from a local (HostA) point of view
+
+Example: Accept inwards ssh connection (B.com => A.com, Use port-B == 10022)
+On A.com: ssh -N UserB@B.com -R 10022:localhost:22
+On B.com: ssh -p 10022 UserA@localhost
+
+
