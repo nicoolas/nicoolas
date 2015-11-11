@@ -1,7 +1,10 @@
 #!/bin/bash
 
+CMD_TRUECRYPT="sudo truecrypt"
+CMD_FILEBROWSER="caja"
+
 _get_tc_dir() {
-	truecrypt -t --list "$1" | cut -d ' ' -f4
+	$CMD_TRUECRYPT -t --list "$1" | cut -d ' ' -f4
 }
 _k_error() {
     if ! kdialog --error "$1" 2>/dev/null
@@ -68,22 +71,22 @@ fi
 case $(basename $0) in
 	*.mount)
 		[ -r "$tc_file" ] || _k_error "Cannot find file '$tc_file'"
-		truecrypt --keyfiles="" --protect-hidden=no "$tc_file"
-		[ $? -eq 0 ] && dolphin $(_get_tc_dir "$tc_file") >/dev/null 2>&1 &
+		$CMD_TRUECRYPT --keyfiles="" --protect-hidden=no "$tc_file"
+		[ $? -eq 0 ] && $CMD_FILEBROWSER $(_get_tc_dir "$tc_file") >/dev/null 2>&1 &
 		;;
 	*.mount-large)
-		truecrypt -t --list "$main_tc_file" || _k_error "Mount main TC volume first"
-		truecrypt --keyfiles="$(_get_tc_dir "$main_tc_file")/keys/tc_large.key" --protect-hidden=no "$large_tc_file"
-		[ $? -eq 0 ] && dolphin $(_get_tc_dir "$large_tc_file") >/dev/null 2>&1 &
+		$CMD_TRUECRYPT -t --list "$main_tc_file" || _k_error "Mount main TC volume first"
+		$CMD_TRUECRYPT --keyfiles="$(_get_tc_dir "$main_tc_file")/keys/tc_large.key" --protect-hidden=no "$large_tc_file"
+		[ $? -eq 0 ] && $CMD_FILEBROWSER $(_get_tc_dir "$large_tc_file") >/dev/null 2>&1 &
 		;;
 	*.umount-one)
 		[ -r "$tc_file" ] || _k_error "Cannot find file '$tc_file'"
-		truecrypt -t --list "$tc_file" && truecrypt --dismount "$tc_file"
+		$CMD_TRUECRYPT -t --list "$tc_file" && $CMD_TRUECRYPT --dismount "$tc_file"
 		;;
 	*.umount-all)
-		if truecrypt -t --list "$main_tc_file"
+		if $CMD_TRUECRYPT -t --list "$main_tc_file"
 		then
-			if truecrypt --dismount "$main_tc_file"; then
+			if $CMD_TRUECRYPT --dismount "$main_tc_file"; then
 				if _check_checksum
 				then
 					touch "$main_tc_file" # Refresh file -> force bt-sync action
@@ -94,7 +97,7 @@ case $(basename $0) in
 				fi
 			fi
 		fi
-		truecrypt -t --list "$large_tc_file" && truecrypt --dismount "$large_tc_file"
+		$CMD_TRUECRYPT -t --list "$large_tc_file" && $CMD_TRUECRYPT --dismount "$large_tc_file"
 		;;
 esac
 		
