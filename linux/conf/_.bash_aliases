@@ -2,7 +2,6 @@
 ## export bashrc_aliases_sourced=yes
 
 alias init_profile=". ${HOME}/.bashrc"
-alias edit_profile="vi ${HOME}/.bashrc"
 alias apt='sudo aptitude '
 alias slogs='sudo tail -n 40 -f /var/log/syslog'
 alias shout='notify-send "Youpi."'
@@ -25,7 +24,7 @@ alias tmux-copy-pwd=" pwd | tmux-copy-n"
 function browse()
 {
     local _dir="$1"
-    for _b in "nautilus" "dolphin" "nemo"
+    for _b in "caja" "nautilus" "dolphin" "nemo"
     do
         if which $_b &> /dev/null
         then
@@ -58,16 +57,16 @@ function tgo()
 function tmux-buffers()
 {
 	local buf=""
-	for i in $(seq 0  9)
+	cd /opt/screen/ || return 1
+	for buf in scbuf.[0-9]*
 	do 
-		buf=/opt/screen/scbuf.$i
 		if [ -r $buf ]
 		then
-			echo "\033[1;31m=== Buffer #$i ===\033[0m"
-			cat $buf
+			#echo "\033[1;31m=== Buffer #$i ===\033[0m"
+			head -v -n 20 $buf
 			echo
 		fi
-	done | less -R
+	done | less #-R
 }
 
 # some more ls aliases
