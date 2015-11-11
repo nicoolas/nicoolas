@@ -34,9 +34,10 @@ Run from: HostA
 ssh [-N] [-p SSH-PortB]
     UserB@HostB
     -L PortA:HostB:PortB
+=> HostB:PortB (here localhost:PortB) to be interpreted from HostB point of view
 
 Example: From A.com, to B.com
-On A.com: ssh -N Buser@B.com -L 11111:B.com:22222
+On A.com: ssh -N Buser@B.com -L 11111:localhost:22222
 Test:
 On B.com: netcat -l -p 22222
 On A.com: netcat 127.0.0.1 11111
