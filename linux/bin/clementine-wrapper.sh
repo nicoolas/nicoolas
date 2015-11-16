@@ -80,7 +80,7 @@ do
 	then
 		early_death_max_count=$((early_death_max_count+1))
 		__log "$prog: Died too young ! ($early_death_max_count/$early_death_max)"
-		if [ $early_death_max_count -ge $early_death_max ]
+		if [ $early_death_max_count -ge $early_death_max ]
 		then
 			__log "$prog: Died young too many times, aborting. ($early_death_max_count/$early_death_max)"
 			cat

@@ -1,0 +1,51 @@
+#!/bin/sh
+
+_fatal() {
+	echo
+	echo "ERROR: $*"
+	exit 1
+}
+
+_get_base_from_dec() {
+	echo $(echo "\"$1=\"; obase=$2 ; $3" | bc) 
+}
+
+_get_dec() {
+    case "$1" in
+        0b*|*b)            ibase=2;;
+        *h|0x*|*[a-fA-F]*) ibase=16;;
+        0*)                ibase=8;;
+        [1-9]*)            ibase=10;;
+        *) _fatal "illegal number $1";;
+    esac
+
+	local num=$(echo "$i" | sed -e 's/^0[bBxX]//;s/[hbHB]$//' | tr '[a-f]' '[A-F]')
+
+	echo "obase=10 ; ibase=$ibase; $num" | bc
+}
+ 
+_get_header() {
+	echo "bin oct dec hex"
+}
+
+_get_bases() {
+	_get_base_from_dec bin 2  $1
+	_get_base_from_dec oct 8  $1
+	_get_base_from_dec dec 10 $1
+	_get_base_from_dec hex 16 $1
+}
+
+if [ $# -gt 0 ]
+then
+	for i in "$@"
+	do
+		n=$(_get_dec $i)
+		_get_bases $n 
+	done 
+else
+	while read i
+	do
+		n=$(_get_dec $i)
+		_get_bases $n 
+	done 
+fi
