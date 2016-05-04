@@ -25,3 +25,8 @@ aptitude install smbclient cifs-utils
 * Dev
 aptitude install build-essential valgrind
 
+
+* Centos: 
+yum install ncurses-term
+yum install epel-release
+
