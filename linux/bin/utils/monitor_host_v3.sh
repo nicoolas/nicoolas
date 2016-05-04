@@ -70,6 +70,7 @@ EOS
 _usage()
 {
 cat <<EOF
+
 The tool monitors a distant machine, wating for either its death of its resurrection 
 by pinging (or arpinging) it at regular intervals.
 
@@ -101,10 +102,11 @@ Usage: $(basename $0) [options] [Name] <IP>
      -x <exec_cmd>: command= execute given command
 	 
      Time & tries :
-     -s <seconds> : Sleep time between to checks (default ($SLEEP)
+     -s <seconds> : Sleep time between to checks (default: $SLEEP)
      -t <seconds> : Sleep time between to checks,
-                    when host state has chanegd (default ($SLEEP2)
-     -r <number>  : Number of retires before shouting state change
+                    when host state has changed (default: $SLEEP2)
+     -r <number>  : Number of retries before shouting state change
+
 EOF
 [ -n "$1" ] && exit $1
 }
@@ -190,8 +192,7 @@ output_result()
 	elif [ "$mode" = "track_down" -a "$1" = "noping" ]
 	then
 		do_echo=1
-		echo_arg="-n"
-		msg2="is dead"
+		msg2="is dead ($2 tries left)"
 	elif [ "$mode" = "track_down" -a "$1" = "ping" ]
 	then
 		do_echo=1
@@ -199,26 +200,17 @@ output_result()
 	elif [ "$mode" = "track_up" -a "$1" = "reallydead" ]
 	then # Happens if (RETRIES == 0)
 		do_echo=1
-		if [ "$param_verbose]" = "yes" ]
-		then # If not verbose, print message start now
-			[ $RETRIES -ne 0 ] && msg=""
-		fi
 		msg2="is dead"
 	elif [ "$mode" = "track_down" -a "$1" = "reallydead" ]
 	then
 		do_echo=1
 		do_notify=1
-		if [ "$param_verbose]" = "yes" ]
-		then # If not verbose, print message start now
-			[ $RETRIES -ne 0 ] && msg=""
-		fi
 		msg2="is dead !"
 		[ "$do_switch" = "yes" ] && switch_now=yes
 	elif [ "$1" = "notdeadafterall" ]
 	then
 		do_echo=1
 		do_notify=0
-		[ $RETRIES -ne 0 ] && msg=""
 		msg2=" OK $time"
 	fi
 	if [ "$param_verbose" = "yes" -o "$do_notify" -eq 1 -o "$verbose_first" = "yes" ]; then
@@ -342,7 +334,7 @@ do
 	then
 			output_result reallydead
 	else	
-		output_result noping
+		output_result noping $RETRIES
 		# Now wait for appliance to (re)boot 
 		[ "$alive_mode" = "yes" ] && alive_mode="nope"
 		if [ "$mode" = "track_down" ]
@@ -350,14 +342,14 @@ do
 			i=$RETRIES
 			while [ $i -gt 0 ]
 			do
+				i=$(($i-1))
 				if ! test_ping
 				then
-					[ "$param_verbose" = "yes" ] && echo -n "."
+					output_result noping $i
 					sleep $SLEEP2
 				else
 					break
 				fi
-				i=$(($i-1))
 			done
 			if [ $i -eq 0 ]
 			then
