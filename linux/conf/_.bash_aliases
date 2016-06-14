@@ -34,6 +34,12 @@ function browse()
             return 0
         fi
     done
+
+    if which explorer.exe 2>/dev/null | grep -q '^/cygdrive/'
+    then
+        explorer.exe /e /root,$(pwd | sed 's_^/cygdrive/__;s_/_:\\_;s_/_\\_g')
+        return 0
+    fi
     echo "No browser found"
     return 1
 }
