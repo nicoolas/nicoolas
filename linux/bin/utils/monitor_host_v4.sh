@@ -13,6 +13,7 @@ method=arping
 once=no
 alive_mode=no
 param_verbose=no
+param_quiet=no
 param_notify=no
 
 _print_seconds() {
@@ -303,7 +304,10 @@ else
 		_usage 1
 	fi
 fi
-[ "$param_quiet$param_verbose" = "yesyes" ] && param_verbose=""
+if [ "$param_quiet$param_verbose" = "yesyes" ]; then
+	_error "Do not use Verbose _and_ Quiet together !"
+	_usage 1
+fi
 [ "$method" != "ping" -a "$method" != "arping" -a "$method" != "exec" ] && _usage 1
 [ "$method" = "exec" -a -z "$method_exec" ] && _usage 1
 
