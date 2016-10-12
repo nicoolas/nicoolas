@@ -1,9 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =7
-let g:netrw_dirhist_1='/home/louie/Dropbox'
-let g:netrw_dirhist_2='/etc/network/interfaces.d'
-let g:netrw_dirhist_3='/home/niko/data_restore/etc/ca-certificates'
-let g:netrw_dirhist_4='/etc/apache2/sites-available'
-let g:netrw_dirhist_5='/home/niko/.config'
-let g:netrw_dirhist_6='/home/niko'
-let g:netrw_dirhist_7='/home/niko/owncloud/nicoolas/owncloud/Documents/CV/CV_Nicolas.md/markdown-resume-master/CV_Nicolas_Toussaint'
