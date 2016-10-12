@@ -1,5 +1,0 @@
-#!/bin/sh
-# svn_commit
-
-svn_action_ask.sh "Commit the following files (yes / no / diff)?" "svn ci" $*
-
