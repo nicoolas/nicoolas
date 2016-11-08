@@ -2,13 +2,11 @@
 ## export bashrc_aliases_sourced=yes
 
 alias init_profile=". ${HOME}/.bashrc"
-alias apt='sudo aptitude '
 alias slogs='sudo tail -n 40 -f /var/log/syslog'
 alias shout='notify-send "Youpi."'
 
 alias gr='grep -nI --color=auto'
 alias rgr='grep -rnI --color=auto'
-alias apt='sudo aptitude'
 alias grep='grep --color=auto'
 alias psf='pgrep -fl '
 
