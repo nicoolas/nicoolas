@@ -2,12 +2,14 @@
 
 CMD_TRUECRYPT="sudo truecrypt"
 CMD_FILEBROWSER="caja"
+CMD_NOTIFY_INF="notify-send '$(basename $0)' "
+CMD_NOTIFY_ERR="notify-send -u critical '$(basename $0)' "
 
 _get_tc_dir() {
 	$CMD_TRUECRYPT -t --list "$1" | cut -d ' ' -f4
 }
 _k_error() {
-    if ! kdialog --error "$1" 2>/dev/null
+    if ! $CMD_NOTIFY_ERR "$1" 2>/dev/null
     then
         echo "$1"
     fi
@@ -72,16 +74,26 @@ case $(basename $0) in
 	*.mount)
 		[ -r "$tc_file" ] || _k_error "Cannot find file '$tc_file'"
 		$CMD_TRUECRYPT --keyfiles="" --protect-hidden=no "$tc_file"
-		[ $? -eq 0 ] && $CMD_FILEBROWSER $(_get_tc_dir "$tc_file") >/dev/null 2>&1 &
+		if [ $? -eq 0 ]
+		then
+			$CMD_NOTIFY_INF "Mount OK"
+			$CMD_FILEBROWSER $(_get_tc_dir "$tc_file") >/dev/null 2>&1 &
+		fi
 		;;
 	*.mount-large)
 		$CMD_TRUECRYPT -t --list "$main_tc_file" || _k_error "Mount main TC volume first"
-		$CMD_TRUECRYPT --keyfiles="$(_get_tc_dir "$main_tc_file")/keys/tc_large.key" --protect-hidden=no "$large_tc_file"
-		[ $? -eq 0 ] && $CMD_FILEBROWSER $(_get_tc_dir "$large_tc_file") >/dev/null 2>&1 &
+		$CMD_TRUECRYPT --keyfiles="$(_get_tc_dir "$main_tc_file")/Keys-Unlockers/tc_large.key" --protect-hidden=no "$large_tc_file"
+		if [ $? -eq 0 ]
+		then
+			$CMD_NOTIFY_INF "Mount Large OK"
+			$CMD_FILEBROWSER $(_get_tc_dir "$large_tc_file") >/dev/null 2>&1 &
+		fi
+
 		;;
 	*.umount-one)
 		[ -r "$tc_file" ] || _k_error "Cannot find file '$tc_file'"
 		$CMD_TRUECRYPT -t --list "$tc_file" && $CMD_TRUECRYPT --dismount "$tc_file"
+		$CMD_NOTIFY_INF "Unmount One OK"
 		;;
 	*.umount-all)
 		if $CMD_TRUECRYPT -t --list "$main_tc_file"
@@ -98,6 +110,7 @@ case $(basename $0) in
 			fi
 		fi
 		$CMD_TRUECRYPT -t --list "$large_tc_file" && $CMD_TRUECRYPT --dismount "$large_tc_file"
+		$CMD_NOTIFY_INF "Unmount All OK"
 		;;
 esac
 		
