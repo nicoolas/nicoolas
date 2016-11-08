@@ -8,7 +8,7 @@ cat <<EOS
 
 EOS
 
-if echo -e "$alert_level\n$free_space" | sort --check=silent -h
+if echo -e "$free_space\n$alert_level\n" | sort --check=silent -h
 then
   msg_subject="[$(hostname)] Disk space alert: $free_space"
   msg_contents="Server: $(hostname)\nDate: $(date)\nDisk space available: $free_space"
