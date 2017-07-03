@@ -273,7 +273,6 @@ fi
 if [ "$alive_mode" = "yes" ]; then
 	mode="track_up"
 	once="yes"
-	[ $SLEEP -gt 2 ] && SLEEP=2
 else
 	if [ "$mode" = "down" ] ; then mode=track_down
 	elif [ "$mode" = "up" ] ; then mode=track_up
@@ -332,7 +331,8 @@ do
 		output_result ping
 	elif [ $RETRIES -eq 0 ]
 	then
-			output_result reallydead
+		[ "$alive_mode" = "yes" ] && alive_mode="nope"
+		output_result reallydead
 	else	
 		output_result noping $RETRIES
 		# Now wait for appliance to (re)boot 
