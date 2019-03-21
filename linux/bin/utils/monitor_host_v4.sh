@@ -350,6 +350,7 @@ $(basename $0)
 
 EOF
 
+switch_timestamp=$(date +"%s") # to compute elapsed time on first switch
 verbose_first="yes" # force verbose once after state change
 while :
 do
@@ -369,13 +370,14 @@ do
 		if [ "$mode" = "track_down" ]
 		then
 			i=$RETRIES
+			sleep $SLEEP2
 			while [ $i -gt 0 ]
 			do
 				i=$(($i-1))
 				if ! test_ping
 				then
 					output_result noping $i
-					sleep $SLEEP2
+					[ $i -eq 0 ] || sleep $SLEEP2
 				else
 					break
 				fi

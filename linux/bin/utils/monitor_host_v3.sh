@@ -167,7 +167,7 @@ switch_mode()
 output_result()
 {
 	#msg="$(date +"%A %T") : $name"
-	msg="$(date +'%a %T') $name"
+	msg="$(date +'%a %d-%m-%y %T') $name"
 	do_echo=0
 	do_notify=0
 	echo_arg=""
