@@ -12,6 +12,8 @@ alias psf='pgrep -fl '
 
 alias sfind='find  -path *.svn -prune -o -print '
 
+alias dpkg_disk_usage="dpkg-query -Wf '\${Installed-Size}\t\${Package}\t\${Priority}\n\' | egrep '\s(optional|extra)' | cut -f 1,2 | sort -nr"
+
 # TMUX
 alias tmux-ls='tmux list-sessions'
 alias tmux-copy=" tee /tmp/screen-exchange"
